@@ -1,0 +1,8 @@
+{
+	"tvdbApiKey": "somekey",
+	"transmissionURL": "192.168.1.100",
+	"transmissionPort": "9091",
+	"transmissionUser": "user",
+	"transmissionPassword": "pass",
+	"tvShowsPath": "/some/directory"
+}

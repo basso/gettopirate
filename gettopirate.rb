@@ -22,7 +22,7 @@ config = Config.new(configData['tvdbApiKey'], configData['transmissionURL'], con
 db = Database.new('test.db',false,false)
 tvdb = TvdbParty::Search.new(config.tvdbApiKey)
 torrentClient = TransmissionClient.new(config.transmission)
-feedparser = FeedParser.new('http://showrss.info/rss.php?user_id=209783&hd=null&proper=null&raw=true')
+feedparser = FeedParser.new('')
 feedparser.fetch
 
 library = LibraryParser.new(config.tvShowsPath)

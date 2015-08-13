@@ -1,11 +1,30 @@
 # gettopirate
 
+## What does decode
+Show Name S05E08 720p HDTV x264 KILLERS
+
+## What does not decode
+###Show.Name.S05E08.720p.HDTV.x264.KILLERS
+need to implement clean filter
+###Show.Name.S05E08.Episode.Name.720p.HDTV.x264.KILLERS
+need to implement episode name remover if more than 0 words between S05E08 and 720p
+
+## What is ignored
+### WEB DL
+Not sure what standard they follow
+### Anime
+Not sure what standard they follow.
+Anime Season 1 might hit right on TVDB
+Anime Season 2 Ultra-Kawwai-Desu will not hit on TVDB since they changed the name for season 2
+Also follow 01,02,03,04 episode standard with no season information
+
 ## Logic
-- Reads what tv shows you have, checks with TVDB, adds to local sqlite database
+- Reads what tv shows you have (or have deleted), checks with TVDB, adds to local sqlite database
 - It does this to get BIG DATA, and set the torrent download path directly to the correct "Showfolder/Seasonumber/"
 - Parses ShowRSS Feed (One Feed)
 - Decodes scene release naming to pull information about quality, repack, showname, episode/season etc
-- Searches TVDB
+- Checks if it has the episode, if yes skip
+- If not sends torrent to transmission with exact directory to download to
 
 ## Points
 

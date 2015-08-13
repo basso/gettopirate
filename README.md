@@ -1,4 +1,5 @@
 # gettopirate
+Full of bugs, does not work yet
 
 ## What does decode
 Show Name S05E08 720p HDTV x264 KILLERS
@@ -8,6 +9,8 @@ Show Name S05E08 720p HDTV x264 KILLERS
 need to implement clean filter
 ###Show.Name.S05E08.Episode.Name.720p.HDTV.x264.KILLERS
 need to implement episode name remover if more than 0 words between S05E08 and 720p
+### SD
+Don't care about SD releases
 
 ## What is ignored
 ### WEB DL

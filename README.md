@@ -1,6 +1,11 @@
 # gettopirate
 Full of bugs, does not work yet
 
+## Todo
+- Fix namingdecoder to remove episode name in scenerelease.
+- Implement email, to bother you.
+- Implement clean filter? (Only use ShowRSS.. might not be needed)
+
 ## What does decode
 Show Name S05E08 720p HDTV x264 KILLERS
 

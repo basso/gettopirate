@@ -6,9 +6,8 @@ Show Name S05E08 720p HDTV x264 KILLERS
 
 ## What does not decode
 ###Show.Name.S05E08.720p.HDTV.x264.KILLERS
-need to implement clean filter
+ShowRSS feeds are cleaned
 ###Show.Name.S05E08.Episode.Name.720p.HDTV.x264.KILLERS
-need to implement episode name remover if more than 0 words between S05E08 and 720p
 ### SD
 Don't care about SD releases
 

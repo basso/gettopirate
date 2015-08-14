@@ -7,3 +7,4 @@ gem 'awesome_print'
 gem 'sqlite3'
 gem 'trans-api', github: "dblommesteijn/trans-api"
 gem 'feedjira'
+gem 'logging'

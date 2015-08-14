@@ -1,4 +1,6 @@
 *.sw*
 config.json
 Gemfile.lock
+gettopirate.db
 test.db
+gettopirate.log

@@ -4,16 +4,19 @@ class LibraryParser
 	end
 
 	def importFromDisk
-		directories = Dir.entries(@path)	
+		$log.debug "Starting import from disk at: #{@path}"
+		directories = Dir.entries(@path)
 		#Clean up some shit
 		directories.each do |dir|
 			if dir[0] == "."
 				directories.delete(dir)
 			end
 		end
+		$log.debug "All directories: #{directories}"
 		
 		directories.each do |dir|
 			if Show.first(:dirName => dir).nil?
+				$log.debug "#{dir} is not in Show Database, adding to database"
 				show = Show.new(
 								:dirName => dir, 
 								:path => "#{@path}/#{dir}", 
@@ -24,11 +27,13 @@ class LibraryParser
 				show = Show.first(:dirName => dir)
 				showPath = "#{@path}/#{dir}"
 				episodes = []
+				$log.debug "Traversing #{showPath}"
 				traverse(showPath, episodes)
 				
 				episodes.each do |ep|
 					# If filename does not exist in database run import code
 					if show.episodes.first(:filename => ep[:filename]).nil?
+						$log.debug "#{ep[:filename]} is not in database, saving!"
 						newepisode = Episode.new(
 													:filename => ep[:filename], 
 													:path => ep[:path], 
@@ -72,6 +77,7 @@ def traverse(start, array)
 			next
 		elsif File.directory?(path)
 			traverse(path, array)
+				$log.debug "--#{path} is folder, going deeper"
 		else
 			if x.downcase["sample"]
 				next
@@ -81,7 +87,7 @@ def traverse(start, array)
 			end
 			if x.downcase[".mkv"] || x.downcase[".avi"] || x.downcase[".mp4"] && !x.downcase[".part"]	
 				episode = {:filename => x, :path => path}
-
+				$log.debug "----#{x}"
 				array.push(episode)
 			end
 		end
@@ -89,10 +95,13 @@ def traverse(start, array)
 end
 
 	def importShowInformation (tvdb)
+		$log.debug "Starting import of show information"
 		Show.each do |show|
 			if show.name.nil? || show.remoteID.nil? || show.overview.nil? 
+				$log.debug "Directory name: #{show.dirName} does not have TVDB information"
 				id = tvdb.search(show.dirName).first
 				result = tvdb.get_series_by_id(id["seriesid"])
+				$log.debug "TVDB result: #{result.name}, saving!"
 				show.name = result.name
 				show.remoteID = result.id
 				show.overview = result.overview
@@ -102,12 +111,17 @@ end
 	end
 	
 	def importEpisodeInformation (tvdb)
+		$log.debug "Starting import of episode information"
 		Show.each do |show|
+			$log.debug "--#{show.name}"
 		  show.episodes.each do |episode|
 				if episode.name.nil? || episode.overview.nil?
+					$log.debug "----#{episode.filename} does not have TVDB information"
 					showresult = tvdb.get_series_by_id(show.remoteID)
 					seasonNumber, episodeNumber = findSeasonAndEpisode(episode.filename)
+					$log.debug "----Interpreted result: Season #{seasonNumber}, Episode #{episodeNumber}"
 					result = showresult.get_episode(seasonNumber,episodeNumber)
+					$log.debug "----TVDB result: #{result.name}, saving!"
 					episode.name = result.name
 					episode.overview = result.overview
 					episode.season = result.season_number
@@ -122,16 +136,20 @@ end
 	# All that fucking parsing work
 	# Look how fucking sexy this is
 	def cleanDeletedShows
+		$log.debug "Checking for deleted shows"
 		Show.each do |show|
 			if !File.directory? show.path
+				$log.debug "--Directory #{show.path} is gone, deleting!"
 				show.destroy
 			end
 		end
 	end
 	
 	def cleanDeletedEpisodes
+		$log.debug "Checking for deleted episodes"
 		Episode.each do |episode|
 			if !File.exist? episode.path
+				$log.debug "--File #{episode.path} is gone, deleting!"
 				episode.destroy
 			end
 		end

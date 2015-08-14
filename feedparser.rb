@@ -11,10 +11,13 @@ class FeedParser
 		cleanedName = true # Does not contain . - and has spaces
 		interpreter = NamingInterpreter.new(cleanedName)
 		feed = Feedjira::Feed.fetch_and_parse @feedURL
+		$log.debug "Fetching all entries from feed"
 		arr = []	
 		feed.entries.each do |entrie|
 			if !entrie.title.include? "WEB DL"
+				$log.debug "Entry: #{entrie.title}"
 				release = interpreter.read(entrie.title)
+				$log.debug "Interpreted values: #{release}"
 				release[:link] = entrie.url
 				release[:entryID] = entrie.entry_id
 				arr.push(release)
@@ -23,6 +26,7 @@ class FeedParser
 		
 		arr.each do |feed|
 			if FeedItem.first(:entryID => feed[:entryID]).nil?
+				$log.debug "#RSS Feed EntryID #{feed[:entryID]} is not in database, saving to database!"
 				feedItem = FeedItem.new
 				feedItem.attributes = {
 					:name => feed[:name],
@@ -34,6 +38,7 @@ class FeedParser
 					:releaser => feed[:releaser],
 					:proper => feed[:proper],
 					:repack => feed[:repack],
+					:real => feed[:real],
 					:link => feed[:link],
 					:prossesed => false,
 					:entryID => feed[:entryID],
@@ -45,16 +50,23 @@ class FeedParser
 	end
 
 	def uploadTorrent (tvdb, torrentClient, config)
+		$log.debug "Checking if  torrents should be uploaded to transmission at #{config.transmissionURL}"
 		FeedItem.each do |item|
+			
 			if !item.prossesed
-				binding.pry
 				search = tvdb.search(item.name).first
+				$log.debug "--Searching TVDB for show with #{item.name}"
 				result = tvdb.get_series_by_id(search["seriesid"])
+				$log.debug "--TVDB result: #{result.name}"
 				wantedPath = "#{config.tvShowsPath}/#{result.name}"
+				$log.debug "--Show path will be: #{wantedPath}"
+
 					if Show.first(:name => result.name).nil?
-						puts "#{item.name} is not in the database so has no directory"
-						puts "Suggested download path will be = #{config.tvShowsPath}/#{result.name}/Season #{item.season}"
+						$log.debug "----#{item.name} is not in the database so has no directory"
 						downloadDir = "#{config.tvShowsPath}/#{result.name}/Season #{item.season}"
+						$log.debug "----Download path will be: #{downloadDir}"
+						$log.debug "----Sending torrent to transmission"
+						binding.pry
 						torrentClient.addMagnet(item.link, downloadDir)
 						item.prossesed = true
 						item.save!
@@ -64,6 +76,7 @@ class FeedParser
 						if Show.first(:name => result.name).episodes(:season => item.season, :episode => item.episode).empty?
 							puts "#{item.name} Season #{item.season} Episode #{item.episode} is not in database"
 							puts "Suggested download path will be = #{Show.first(:name => result.name).path}/Season #{item.season}"
+							downloadDir = "#{config.tvShowsPath}/#{result.name}/Season #{item.season}"
 							torrentClient.addMagnet(item.link, downloadDir)
 							item.prossesed = true
 							item.save!

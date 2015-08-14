@@ -39,6 +39,7 @@ class FeedItem
 	property :releaser, 	String
 	property :proper, 		Boolean
 	property :repack, 		Boolean
+	property :real, 			Boolean
 	property :link, 			String
 	property :prossesed, 	Boolean
 	property :timestamp, 	DateTime

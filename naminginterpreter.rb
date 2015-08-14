@@ -13,8 +13,9 @@ class NamingInterpreter
 			source = findSource(words)
 			proper = findProper(words)
 			repack = findRepack(words)
+			real = findReal(words)
 			name = findName(words)
-			result = {:name=>name,:season=>season,:episode=>episode,:source=>source,:quality=>quality,:codec=>codec,:releaser=>releaser,:proper=>proper,:repack=>repack,:link => nil,:entryID=>nil}
+			result = {:name=>name,:season=>season,:episode=>episode,:source=>source,:quality=>quality,:codec=>codec,:releaser=>releaser,:proper=>proper,:repack=>repack,:real=>real,:link => nil,:entryID=>nil}
 			
 			#FUCKING RUBY BUG
 			if result[:proper].kind_of?(Array)
@@ -83,6 +84,16 @@ class NamingInterpreter
 		words.each do |word|
 			if word.downcase === 'repack'
 				repack = word
+				words.delete(word)
+				return true
+			end
+		end
+	end
+	
+	def findReal(words)
+		words.each do |word|
+			if word.downcase === 'real'
+				real = word
 				words.delete(word)
 				return true
 			end

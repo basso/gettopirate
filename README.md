@@ -13,8 +13,6 @@ Don't care about SD releases
 
 ## What is ignored
 ### WEB DL
-Not sure what standard they follow
-### Anime
 Not sure what standard they follow.
 
 ## Logic

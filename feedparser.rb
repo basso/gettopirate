@@ -50,7 +50,7 @@ class FeedParser
 	end
 
 	def uploadTorrent (tvdb, torrentClient, config)
-		$log.debug "Checking if  torrents should be uploaded to transmission at #{config.transmissionURL}"
+		$log.debug "Checking if torrents should be uploaded to transmission at #{config.transmissionURL}"
 		FeedItem.each do |item|
 			
 			if !item.prossesed

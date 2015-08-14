@@ -1,5 +1,21 @@
 # gettopirate
-Full of bugs, does not work yet fully yet
+Full of bugs, might explode at any time
+## Install
+
+```
+1. Install ruby and bundler.
+2. Install transmission on the server
+
+3. Registrer for ShowRSS and add shows
+4. Filter shows to only include 720p
+5. On feed settings make sure to select RAW 
+
+git clone git@github.com:basso/gettopirate.git
+cd gettopirate
+bundle install
+alter settings in config.json.example and rename to config.json
+ruby gettopirate.rb
+```
 
 ## What does decode
 Show Name S05E08 720p HDTV x264 KILLERS

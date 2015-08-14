@@ -1,10 +1,5 @@
 # gettopirate
-Full of bugs, does not work yet
-
-## Todo
-- Fix namingdecoder to remove episode name in scenerelease.
-- Implement email, to bother you.
-- Implement clean filter? (Only use ShowRSS.. might not be needed)
+Full of bugs, does not work yet fully yet
 
 ## What does decode
 Show Name S05E08 720p HDTV x264 KILLERS
@@ -22,9 +17,6 @@ Don't care about SD releases
 Not sure what standard they follow
 ### Anime
 Not sure what standard they follow.
-Anime Season 1 might hit right on TVDB
-Anime Season 2 Ultra-Kawwai-Desu will not hit on TVDB since they changed the name for season 2
-Also follow 01,02,03,04 episode standard with no season information
 
 ## Logic
 - Reads what tv shows you have (or have deleted), checks with TVDB, adds to local sqlite database
@@ -37,13 +29,21 @@ Also follow 01,02,03,04 episode standard with no season information
 ## Points
 
 - this hack is made to live in a crontab
-- Does not handle deletion of torrent transfer in transmission since transmission randomizes ID's after reboot
+- Does not handle deletion of torrent transfer in Transmission since it randomizes ID's after reboot
 - Only handles ShowRSS
 
 ## Laws 
 - Path to TV Shows should only have TV show directories in it
 - Directory names should be exact TVDB's show name
 - Each show directory needs to have Season under directories: "Season 1, Season 2" etc
+- Episodes must have SxxExx in the title (eg S01E23) to be scanned in library
+
+```
+Show Name
+--Season 1
+----Episode 1 S01E01
+```
+
 - If directory name is renamed, it is deleted in the database and re-scanned on next run
 - If episodes are renamed or deleteded, it is deletes it in the database and re-scans on next run
 - more to come

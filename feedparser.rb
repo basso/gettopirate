@@ -72,14 +72,17 @@ class FeedParser
 						item.save!
 					end
 					if !Show.first(:name => result.name).nil?
-						puts "The show #{item.name} is in database"
+						$log.debug "----#{result.name} is in the database"
 						if Show.first(:name => result.name).episodes(:season => item.season, :episode => item.episode).empty?
-							puts "#{item.name} Season #{item.season} Episode #{item.episode} is not in database"
-							puts "Suggested download path will be = #{Show.first(:name => result.name).path}/Season #{item.season}"
+							$log.debug "------#{item.name} Season #{item.season} Episode #{item.episode} is not in database"
 							downloadDir = "#{config.tvShowsPath}/#{result.name}/Season #{item.season}"
+							$log.debug "----Download path will be: #{downloadDir}"
+							$log.debug "----Sending torrent to transmission"
 							torrentClient.addMagnet(item.link, downloadDir)
 							item.prossesed = true
 							item.save!
+						else
+							$log.debug "----No episode to download"
 						end
 					end
 				end

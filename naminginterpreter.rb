@@ -27,6 +27,9 @@ class NamingInterpreter
 			if result[:quality].kind_of?(Array)
 				result[:quality] = nil
 			end
+			if result[:real].kind_of?(Array)
+				result[:real] = nil
+			end
 
 			return result		
 		end

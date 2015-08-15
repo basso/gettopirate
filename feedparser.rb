@@ -52,7 +52,6 @@ class FeedParser
 	def uploadTorrent (tvdb, torrentClient, config)
 		$log.debug "Checking if torrents should be uploaded to transmission at #{config.transmissionURL}"
 		FeedItem.each do |item|
-			
 			if !item.prossesed
 				search = tvdb.search(item.name).first
 				$log.debug "--Searching TVDB for show with #{item.name}"
@@ -83,6 +82,8 @@ class FeedParser
 							item.save!
 						else
 							$log.debug "----No episode to download"
+							item.prossesed = true
+							item.save!
 						end
 					end
 				end

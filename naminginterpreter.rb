@@ -6,6 +6,7 @@ class NamingInterpreter
 	def read(name)
 		if @cleaned
 			words = name.split(' ')
+			deleteEpisodeTitle(words)
 			season, episode = findSeasonAndEpisode(words)
 			quality = findQuality(words)
 			codec = findCodec(words)
@@ -35,6 +36,27 @@ class NamingInterpreter
 		end
 	end
 
+	def deleteEpisodeTitle(words)
+		ep = ""
+		qu = ""
+		words.each do |word|
+			if word.upcase.start_with?('S') && word[3] == 'E' && word =~ /\d/
+				ep = word
+			end
+
+			if word.downcase === "720p" || word === "1080p"
+				qu = word
+			end	
+		end
+		
+		hash = Hash[words.map.with_index.to_a]
+		wordsToDelete = words.slice(hash[ep]+1,hash[qu]-2)
+		
+		wordsToDelete.each do |word|
+			words.delete(word)
+		end
+	end
+	
 	def findSeasonAndEpisode(words)
 		words.each do |word|
 			if word.upcase.start_with?('S') && word[3] == 'E' && word =~ /\d/

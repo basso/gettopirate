@@ -65,7 +65,6 @@ class FeedParser
 						downloadDir = "#{config.tvShowsPath}/#{result.name}/Season #{item.season}"
 						$log.debug "----Download path will be: #{downloadDir}"
 						$log.debug "----Sending torrent to transmission"
-						binding.pry
 						torrentClient.addMagnet(item.link, downloadDir)
 						item.prossesed = true
 						item.save!

@@ -27,8 +27,6 @@ $log.add_appenders \
 
 $log.debug "Startup #{Time.now}"
 
-interpreter = NamingInterpreter.new(true)
-interpreter.read('MythBusters S15E10 Dangerous Driving Super Fast 720p HDTV x264 MiNDTHEGAP')
 db = Database.new(config.databasePath,false,false)
 tvdb = TvdbParty::Search.new(config.tvdbApiKey)
 torrentClient = TransmissionClient.new(config.transmission)

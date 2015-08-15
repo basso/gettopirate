@@ -18,12 +18,13 @@ ruby gettopirate.rb
 ```
 
 ## What does decode
+Only 720p/1080p releases
 Show Name S05E08 720p HDTV x264 KILLERS
+Show.Name.S05E08.Episode.Name.No.Matter.How.long.720p.HDTV.x264.KILLERS
 
 ## What does not decode
 ###Show.Name.S05E08.720p.HDTV.x264.KILLERS
 ShowRSS feeds are cleaned
-###Show.Name.S05E08.Episode.Name.720p.HDTV.x264.KILLERS
 ### SD
 Don't care about SD releases
 

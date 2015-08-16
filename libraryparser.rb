@@ -109,28 +109,51 @@ end
 			end
 		end
 	end
-	
+
+	# OH GOD WHAT HAVE I DONE
 	def importEpisodeInformation (tvdb)
 		$log.debug "Starting import of episode information"
 		Show.each do |show|
 			$log.debug "--#{show.name}"
 		  show.episodes.each do |episode|
-				if episode.name.nil? || episode.overview.nil?
+				if episode.name.nil?
 					$log.debug "----#{episode.filename} does not have TVDB information"
 					showresult = tvdb.get_series_by_id(show.remoteID)
 					seasonNumber, episodeNumber = findSeasonAndEpisode(episode.filename)
 					$log.debug "----Interpreted result: Season #{seasonNumber}, Episode #{episodeNumber}"
 					result = showresult.get_episode(seasonNumber,episodeNumber)
+					
 					if result.nil?
-						$log.debug "---- NO TVDB result: #{episode.filename}, skipping!!"
+						$log.debug "---- NO TVDB result: #{episode.filename}, trying with episode title from Feed"
+						feeditem = FeedItem.first(:name => showresult.name, :episode => episodeNumber, :season => seasonNumber)
+						if feeditem.nil?
+							$log.debug "------#{episode.filename} not in feed"
+						else
+							tvdbEpisodes = tvdb.get_all_episodes(showresult)
+							searchArray = feeditem.episodeName.downcase.gsub(/[^0-9a-z ]/i, '').split(" ")
+							tvdbEpisodes.each do |ep|
+								episodeArray = ep.name.downcase.gsub(/[^0-9a-z ]/i, '').split(" ")
+								searchResult = (episodeArray - searchArray)
+								if searchResult.count < 1
+									$log.debug "------Found episode with feeditem!"
+									$log.debug "------TVDB result: #{ep.name}, saving!"
+									episode.name = ep.name
+				        	episode.overview = ep.overview
+									episode.season = ep.season_number
+									episode.episode = ep.number
+								  episode.save!
+								end
+							end
+						end
 					end
+					
 					if !result.nil?
-					$log.debug "----TVDB result: #{result.name}, saving!"
-					episode.name = result.name
-					episode.overview = result.overview
-					episode.season = result.season_number
-					episode.episode = result.number
-					episode.save!
+						$log.debug "----TVDB result: #{result.name}, saving!"
+						episode.name = result.name
+						episode.overview = result.overview
+						episode.season = result.season_number
+						episode.episode = result.number
+						episode.save!
 					end
 				end
 			end

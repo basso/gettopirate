@@ -31,6 +31,7 @@ class FeedItem
 	property :id, 				Serial
 	property :entryID, 		String
 	property :name, 			String
+	property :episodeName, String
 	property :season, 		Integer
 	property :episode, 		Integer
 	property :source, 		String

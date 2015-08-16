@@ -30,6 +30,7 @@ class FeedParser
 				feedItem = FeedItem.new
 				feedItem.attributes = {
 					:name => feed[:name],
+					:episodeName => feed[:episodeName],
 					:season => feed[:season],
 					:episode => feed[:episode],
 					:source => feed[:source],

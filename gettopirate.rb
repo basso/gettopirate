@@ -34,7 +34,6 @@ torrentClient = TransmissionClient.new(config.transmission)
 feedparser = FeedParser.new(config.showrssFeed)
 $log.debug "Feed is #{config.showrssFeed}"
 feedparser.fetch
-
 library = LibraryParser.new(config.tvShowsPath)
 library.importFromDisk
 library.importShowInformation(tvdb)

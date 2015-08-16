@@ -6,7 +6,7 @@ class NamingInterpreter
 	def read(name)
 		if @cleaned
 			words = name.split(' ')
-			deleteEpisodeTitle(words)
+			episodeName = findEpisodeName(words)
 			season, episode = findSeasonAndEpisode(words)
 			quality = findQuality(words)
 			codec = findCodec(words)
@@ -16,7 +16,7 @@ class NamingInterpreter
 			repack = findRepack(words)
 			real = findReal(words)
 			name = findName(words)
-			result = {:name=>name,:season=>season,:episode=>episode,:source=>source,:quality=>quality,:codec=>codec,:releaser=>releaser,:proper=>proper,:repack=>repack,:real=>real,:link => nil,:entryID=>nil}
+			result = {:name=>name,:episodeName=>episodeName,:season=>season,:episode=>episode,:source=>source,:quality=>quality,:codec=>codec,:releaser=>releaser,:proper=>proper,:repack=>repack,:real=>real,:link => nil,:entryID=>nil}
 			
 			#FUCKING RUBY BUG
 			if result[:proper].kind_of?(Array)
@@ -31,12 +31,15 @@ class NamingInterpreter
 			if result[:real].kind_of?(Array)
 				result[:real] = nil
 			end
+			if result[:episodeName].kind_of?(Array)
+				result[:episodeName] = nil
+			end
 
 			return result		
 		end
 	end
 
-	def deleteEpisodeTitle(words)
+	def findEpisodeName(words)
 		ep = ""
 		qu = ""
 		words.each do |word|
@@ -55,6 +58,8 @@ class NamingInterpreter
 		wordsToDelete.each do |word|
 			words.delete(word)
 		end
+		episodeName = wordsToDelete.join(" ")
+		return episodeName
 	end
 	
 	def findSeasonAndEpisode(words)

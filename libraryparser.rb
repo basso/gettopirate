@@ -121,12 +121,17 @@ end
 					seasonNumber, episodeNumber = findSeasonAndEpisode(episode.filename)
 					$log.debug "----Interpreted result: Season #{seasonNumber}, Episode #{episodeNumber}"
 					result = showresult.get_episode(seasonNumber,episodeNumber)
+					if result.nil?
+						$log.debug "---- NO TVDB result: #{episode.filename}, skipping!!"
+					end
+					if !result.nil?
 					$log.debug "----TVDB result: #{result.name}, saving!"
 					episode.name = result.name
 					episode.overview = result.overview
 					episode.season = result.season_number
 					episode.episode = result.number
 					episode.save!
+					end
 				end
 			end
 		end

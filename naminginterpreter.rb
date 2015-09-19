@@ -1,10 +1,22 @@
 class NamingInterpreter
-	def initialize (cleaned)
+	def initialize (cleaned, anime)
 		@cleaned = cleaned
+		@anime = anime
 	end
 
 	def read(name)
-		if @cleaned
+    if @cleaned && @anime
+			words = name.split(' ')
+			removeExt(words)
+			releaser = findAnimeRelease(words)
+			episode = findAnimeEpisode(words)
+			quality = findAnimeQuality(words)
+			name = findAnimeName(words)
+			result = {:name=>name,:episode=>episode,:quality=>quality,:releaser=>releaser,:link => nil,:entryID=>nil}
+			
+			return result		
+		end
+		if @cleaned && !@anime
 			words = name.split(' ')
 			episodeName = findEpisodeName(words)
 			season, episode = findSeasonAndEpisode(words)
@@ -61,6 +73,28 @@ class NamingInterpreter
 		episodeName = wordsToDelete.join(" ")
 		return episodeName
 	end
+
+	def findAnimeName(words)
+		words.each do |word|
+			if word.downcase === "-"
+				words.delete(word)
+			end
+		end
+		
+		name = words.join(" ")
+		return name
+	end
+	
+	def removeExt(words)
+		words.each do |word|
+			if word.include? ".mkv"
+				word.slice!(".mkv")
+			end
+			if word.include? ".mp4"
+				word.slice!(".mp4")
+			end
+		end
+	end
 	
 	def findSeasonAndEpisode(words)
 		words.each do |word|
@@ -73,10 +107,32 @@ class NamingInterpreter
 		end
 	end
 
+
+	def findAnimeEpisode(words)
+		words.each do |word|
+			if word.to_i != 0
+				episode = word.to_i
+				words.delete(word)
+				return episode
+			end
+		end
+	end
+	
 	def findQuality(words)
 		words.each do |word|
 			if word.downcase === "720p" || word === "1080p"
 				quality = word
+				words.delete(word)
+				return quality
+			end
+		end
+	end
+	
+	def findAnimeQuality(words)
+		words.each do |word|
+			if word.downcase === "[720p]" || word === "[1080p]"
+				quality = word
+				quality.delete "[]"
 				words.delete(word)
 				return quality
 			end
@@ -91,6 +147,12 @@ class NamingInterpreter
 				return codec
 			end
 		end
+	end
+
+	def findAnimeRelease(words)
+		releaser = words.first.delete "[]"
+		words.delete(words.first)
+		return releaser
 	end
 
 	def findRelease(words)

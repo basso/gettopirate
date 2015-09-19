@@ -1,15 +1,61 @@
 require 'feedjira'
+require 'open-uri'
 load 'naminginterpreter.rb'
 
 class FeedParser
 
-	def initialize (feedURL)
+	def initialize (feedURL, animeFeedURL)
 		@feedURL = feedURL
+		@animeFeedURL = animeFeedURL
 	end
 
-	def fetch
+	def fetchShanaRSS	
 		cleanedName = true # Does not contain . - and has spaces
-		interpreter = NamingInterpreter.new(cleanedName)
+		anime = true
+		interpreter = NamingInterpreter.new(cleanedName, anime)
+		feed = Feedjira::Feed.fetch_and_parse @animeFeedURL
+		$log.debug "Fetching all entries from feed"
+		arr = []
+		feed.entries.each do |entrie|
+				$log.debug "Entry: #{entrie.summary}"
+				release = interpreter.read(entrie.summary)
+				$log.debug "Interpreted values: #{release}"
+				release[:link] = entrie.url
+				release[:entryID] = entrie.entry_id
+				arr.push(release)
+		end
+		
+		arr.each do |feed|
+			if FeedItem.first(:entryID => feed[:entryID]).nil?
+				$log.debug "#RSS Feed EntryID #{feed[:entryID]} is not in database, saving to database!"
+				feedItem = FeedItem.new
+				feedItem.attributes = {
+					:name => feed[:name],
+					:episodeName => feed[:episodeName],
+					:season => feed[:season],
+					:episode => feed[:episode],
+					:source => feed[:source],
+					:quality => feed[:quality],
+					:codec => feed[:codec],
+					:releaser => feed[:releaser],
+					:proper => feed[:proper],
+					:repack => feed[:repack],
+					:real => feed[:real],
+					:link => feed[:link],
+					:prossesed => false,
+					:entryID => feed[:entryID],
+					:type => "Anime",
+					:timestamp => Time.now
+				}
+				feedItem.save!
+			end
+		end
+	end
+
+	def fetchShowRSS
+				anime = false
+		cleanedName = true # Does not contain . - and has spaces
+		interpreter = NamingInterpreter.new(cleanedName, anime)
 		feed = Feedjira::Feed.fetch_and_parse @feedURL
 		$log.debug "Fetching all entries from feed"
 		arr = []	
@@ -43,6 +89,7 @@ class FeedParser
 					:link => feed[:link],
 					:prossesed => false,
 					:entryID => feed[:entryID],
+					:type => "Show",
 					:timestamp => Time.now
 				}
 				feedItem.save!
@@ -50,43 +97,62 @@ class FeedParser
 		end
 	end
 
-	def uploadTorrent (tvdb, torrentClient, config)
+	def fetch
+		fetchShowRSS
+		fetchShanaRSS		
+	end
+
+	def uploadTorrent (torrentClient, config)
 		$log.debug "Checking if torrents should be uploaded to transmission at #{config.transmissionURL}"
 		FeedItem.each do |item|
 			if !item.prossesed
-				search = tvdb.search(item.name).first
-				$log.debug "--Searching TVDB for show with #{item.name}"
-				result = tvdb.get_series_by_id(search["seriesid"])
-				$log.debug "--TVDB result: #{result.name}"
-				wantedPath = "#{config.tvShowsPath}/#{result.name}"
+				if item.type == "Show"
+				wantedPath = "#{config.tvShowsPath}/#{item.name}"
+				end	
+				if item.type == "Anime"
+				wantedPath = "#{config.animePath}/#{item.name}"
+				end
 				$log.debug "--Show path will be: #{wantedPath}"
 
-					if Show.first(:name => result.name).nil?
-						$log.debug "----#{item.name} is not in the database so has no directory"
-						downloadDir = "#{config.tvShowsPath}/#{result.name}/Season #{item.season}"
+						if item.type == "Show"
+							downloadDir = "#{config.tvShowsPath}/#{item.name}/Season #{item.season}"
+						end	
+						if item.type == "Anime"
+							downloadDir = "#{config.animePath}/#{item.name}"
+						end	
 						$log.debug "----Download path will be: #{downloadDir}"
 						$log.debug "----Sending torrent to transmission"
-						torrentClient.addMagnet(item.link, downloadDir)
+						if item.link.include? "magnet"
+							torrentClient.addMagnet(item.link, downloadDir)
+						end
+						if item.link.include? "http"
+							file = downloadFile(item.link,config)
+							if file != nil
+								torrentClient.add_file(file, downloadDir)
+							end
+						end
+						
 						item.prossesed = true
 						item.save!
-					end
-					if !Show.first(:name => result.name).nil?
-						$log.debug "----#{result.name} is in the database"
-						if Show.first(:name => result.name).episodes(:season => item.season, :episode => item.episode).empty?
-							$log.debug "------#{item.name} Season #{item.season} Episode #{item.episode} is not in database"
-							downloadDir = "#{config.tvShowsPath}/#{result.name}/Season #{item.season}"
-							$log.debug "----Download path will be: #{downloadDir}"
-							$log.debug "----Sending torrent to transmission"
-							torrentClient.addMagnet(item.link, downloadDir)
-							item.prossesed = true
-							item.save!
-						else
-							$log.debug "----No episode to download"
-							item.prossesed = true
-							item.save!
-						end
-					end
 				end
+		end
+	end
+
+	def downloadFile(link, config)
+		fail = false
+		begin
+		download = open("#{link}")
+		rescue OpenURI::HTTPError => error
+			response = error.io
+			response.status
+			response.string
+			fail = true
+			return nil
+		end
+		if !fail
+		IO.copy_stream(download, "#{config.torrentDir}/temp.torrent")
+		file = File.open("#{config.torrentDir}/temp.torrent")
+		return file
 		end
 	end
 end

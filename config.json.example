@@ -1,12 +1,14 @@
 {
-	"tvdbApiKey": "somekey",
 	"transmissionURL": "192.168.1.100",
 	"transmissionPort": "9091",
 	"transmissionUser": "user",
 	"transmissionPassword": "pass",
-	"tvShowsPath": "/some/directory",
+	"tvShowsPath": "/some/directory/series",
+	"animePath": "/var/datastore/Anime",
 	"logging": ":debug",
 	"loggingPath": "gettopirate.log",
 	"databasePath": "gettopirate.db",
-	"showrssFeed": "http://showrss.feed.link"
+	"showrssFeed": "http://showrss.feed.link",
+	"shanaFeed": "http://www.shanaproject.feed.link",
+        "torrentDir": "./temp"
 }
